@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -19,9 +20,6 @@ public class SimpleCalculatorActivity extends AppCompatActivity {
 
     @BindView(R.id.equation_display)
     TextView equationDisplay;
-
-    @BindView(R.id.result_display)
-    TextView resultDisplay;
 
     @BindView(R.id.c_button)
     Button cancelButton;
@@ -104,8 +102,12 @@ public class SimpleCalculatorActivity extends AppCompatActivity {
     public void onEqualsClick(View view) {
         String equation = equationDisplay.getText().toString();
         Parser parser = new Parser(equation);
-        parser.process();
-        resultDisplay.setText(String.valueOf(parser.getResult()));
+        try {
+            parser.process();
+        } catch (Exception e) {
+            Toast.makeText(this,"OH NO !",Toast.LENGTH_LONG).show();
+        }
+        equationDisplay.setText(String.valueOf(parser.getResult()));
     }
 
     @OnClick(value = {R.id.bksp_button})
@@ -119,14 +121,20 @@ public class SimpleCalculatorActivity extends AppCompatActivity {
     @OnClick(value = {R.id.c_button})
     public void onClearButtonClick(View view) {
         equationDisplay.setText("");
-        resultDisplay.setText("");
+        equationDisplay.setText("");
     }
 
     @OnClick(value = {R.id.sign_change_button})
     public void onSignChangeButtonClick(View view) {
         String equation = equationDisplay.getText().toString();
-        List<String> tokens = Tokenizer.tokenize(equation);
-        String lastToken = tokens.get(tokens.size() - 1);
+        List<String> tokens = null;
+        try {
+            tokens = Tokenizer.tokenize(equation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String lastToken = null;
+        if(!tokens.isEmpty()) lastToken = tokens.get(tokens.size() - 1);
         if (Parser.isNumeric(lastToken)) {
             double lastTokenValue = Double.parseDouble(lastToken);
             lastTokenValue = lastTokenValue * -1;

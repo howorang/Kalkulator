@@ -11,14 +11,7 @@ import java.util.regex.Pattern;
 
 public class Tokenizer {
 
-    public static void main(String[] args) {
-        String input = "555*-33";
-        for (String token : tokenize(input)) {
-            System.out.println(token);
-        }
-    }
-
-    public static List<String> tokenize(String input) {
+    public static List<String> tokenize(String input) throws Exception {
         List<String> tokens = new ArrayList<>();
         Pattern pattern = Pattern.compile("((\\d*\\.\\d+)|(\\d+)|([\\^+\\-*/()]))");
         Matcher matcher = pattern.matcher(input);
@@ -26,7 +19,15 @@ public class Tokenizer {
             tokens.add(matcher.group(1));
         }
         zipOperators(tokens);
+        validate(tokens);
         return tokens;
+    }
+
+    private static void validate(List<String> tokens) throws Exception {
+        for(String token : tokens) {
+            if (!Parser.isNumeric(token) && !Parser.isOperator(token)) throw new Exception();
+            if(token.charAt(0) == '.') throw new Exception();
+        }
     }
 
     private static void zipOperators(List<String> tokens) {

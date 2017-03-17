@@ -17,7 +17,7 @@ public class Parser {
         this.input = input;
     }
 
-    public void process() {
+    public void process() throws Exception {
         List<String> tokens = Tokenizer.tokenize(input);
         List<String> postfix = fromInfixToPostfix(tokens);
         result = evaluatePostfix(postfix);
@@ -74,6 +74,7 @@ public class Parser {
     }
 
     public static boolean isNumeric(String str) {
+        if(str == null) return false;
         try {
             double d = Double.parseDouble(str);
         } catch (NumberFormatException nfe) {
